@@ -1,13 +1,13 @@
 import { useState } from "react";
-import type { Surah } from "@/data/quranData";
+import type { SurahInfo } from "@/lib/quranApi";
 import SurahList from "@/components/SurahList";
 import QuranReader from "@/components/QuranReader";
 
 const Index = () => {
-  const [selectedSurah, setSelectedSurah] = useState<Surah | null>(null);
+  const [selectedSurah, setSelectedSurah] = useState<SurahInfo | null>(null);
 
   if (selectedSurah) {
-    return <QuranReader surah={selectedSurah} onBack={() => setSelectedSurah(null)} />;
+    return <QuranReader surahInfo={selectedSurah} onBack={() => setSelectedSurah(null)} />;
   }
 
   return <SurahList onSelect={setSelectedSurah} />;
