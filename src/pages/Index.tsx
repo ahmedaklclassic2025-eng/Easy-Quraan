@@ -1,14 +1,16 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import type { Surah } from "@/data/quranData";
+import SurahList from "@/components/SurahList";
+import QuranReader from "@/components/QuranReader";
 
 const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [selectedSurah, setSelectedSurah] = useState<Surah | null>(null);
+
+  if (selectedSurah) {
+    return <QuranReader surah={selectedSurah} onBack={() => setSelectedSurah(null)} />;
+  }
+
+  return <SurahList onSelect={setSelectedSurah} />;
 };
 
 export default Index;
