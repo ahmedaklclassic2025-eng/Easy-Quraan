@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import type { Verse } from "@/data/quranData";
+import { toEasternArabic } from "@/lib/arabicNumerals";
 
 interface TafsirPopupProps {
   verse: Verse | null;
@@ -29,7 +30,7 @@ const TafsirPopup = ({ verse, surahName, onClose }: TafsirPopupProps) => {
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-bold text-primary font-quran">
-                تفسير الآية {verse.number} من {surahName}
+                تفسير الآية {toEasternArabic(verse.number)} من {surahName}
               </h3>
               <button onClick={onClose} className="p-1.5 rounded-full bg-secondary active:bg-muted transition-colors">
                 <X className="w-4 h-4 text-muted-foreground" />
@@ -37,7 +38,7 @@ const TafsirPopup = ({ verse, surahName, onClose }: TafsirPopupProps) => {
             </div>
             <div className="gold-divider h-px mb-4" />
             <p className="font-quran text-sm leading-8 quran-text-color mb-3 bg-secondary/50 rounded-lg p-3">
-              {verse.text} ﴿{verse.number}﴾
+              {verse.text} ﴿{toEasternArabic(verse.number)}﴾
             </p>
             <p className="text-sm leading-7 text-foreground/90">
               {verse.tafsir}
