@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import type { Surah, Verse } from "@/data/quranData";
 import SurahHeader from "./SurahHeader";
 import TafsirPopup from "./TafsirPopup";
+import { toEasternArabic } from "@/lib/arabicNumerals";
 
 interface QuranReaderProps {
   surah: Surah;
@@ -68,7 +69,7 @@ const QuranReader = ({ surah, onBack }: QuranReaderProps) => {
                 tabIndex={0}
                 aria-label={`تفسير الآية ${verse.number}`}
               >
-                ﴿{verse.number}﴾
+                ﴿{toEasternArabic(verse.number)}﴾
               </span>{" "}
             </span>
           ))}

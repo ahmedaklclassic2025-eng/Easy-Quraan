@@ -1,5 +1,6 @@
 import { BookOpen } from "lucide-react";
 import { surahs, type Surah } from "@/data/quranData";
+import { toEasternArabic } from "@/lib/arabicNumerals";
 
 interface SurahListProps {
   onSelect: (surah: Surah) => void;
@@ -29,14 +30,14 @@ const SurahList = ({ onSelect }: SurahListProps) => {
               className="surah-card rounded-xl px-4 py-3 flex items-center gap-4 text-right w-full"
             >
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <span className="text-sm font-bold text-primary">{surah.number}</span>
+                <span className="text-sm font-bold text-primary">{toEasternArabic(surah.number)}</span>
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-quran text-lg font-bold text-foreground">
                   سورة {surah.name}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {surah.type} • {surah.versesCount} آيات
+                  {surah.type} • {toEasternArabic(surah.versesCount)} آيات
                 </p>
               </div>
               <div className="text-muted-foreground/40 text-xl">❮</div>
