@@ -43,7 +43,7 @@ const QuranReader = ({ surahInfo, onBack }: QuranReaderProps) => {
       .finally(() => setLoading(false));
   }, [surahInfo.number]);
 
-  const showBasmala = surahInfo.number !== 1 && surahInfo.number !== 9;
+  // The API already includes Basmala in the first ayah text, so no need to show it separately
 
   // For Al-Fatiha, first ayah IS the basmala, so we show all ayahs.
   // For other surahs, the basmala is separate, not counted as an ayah.
@@ -92,14 +92,6 @@ const QuranReader = ({ surahInfo, onBack }: QuranReaderProps) => {
 
         {!loading && !error && (
           <>
-            {showBasmala && (
-              <p
-                className="text-center font-quran quran-text-color mb-6"
-                style={{ fontSize: fontSize - 2 }}
-              >
-                {BASMALA}
-              </p>
-            )}
 
             <p
               className="font-quran quran-text-color text-justify leading-loose"
