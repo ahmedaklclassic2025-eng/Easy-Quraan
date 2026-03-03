@@ -15,6 +15,7 @@ export interface AyahText {
   numberInSurah: number;
   juz: number;
   page: number;
+  sajda?: boolean | { id: number; recommended: boolean; obligatory: boolean };
 }
 
 export interface SurahWithAyahs {
@@ -57,4 +58,10 @@ export async function fetchSurahTafsir(surahNumber: number): Promise<SurahWithAy
 
 export function revelationTypeArabic(type: string): string {
   return type === "Meccan" ? "مكية" : "مدنية";
+}
+
+export function hasSajda(ayah: AyahText): boolean {
+  if (typeof ayah.sajda === "boolean") return ayah.sajda;
+  if (ayah.sajda && typeof ayah.sajda === "object") return true;
+  return false;
 }

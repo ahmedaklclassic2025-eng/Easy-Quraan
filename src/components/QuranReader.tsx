@@ -1,28 +1,27 @@
 import { useState, useEffect, useCallback } from "react";
-import { Loader2 } from "lucide-react";
-import { fetchSurahText, fetchSurahTafsir, revelationTypeArabic, type SurahInfo, type AyahText } from "@/lib/quranApi";
+import { Loader2, ChevronLeft } from "lucide-react";
+import { fetchSurahText, fetchSurahTafsir, revelationTypeArabic, hasSajda, type SurahInfo, type AyahText } from "@/lib/quranApi";
 import { toEasternArabic } from "@/lib/arabicNumerals";
 import SurahHeader from "./SurahHeader";
 import TafsirPopup from "./TafsirPopup";
 
 interface QuranReaderProps {
   surahInfo: SurahInfo;
+  allSurahs: SurahInfo[];
   onBack: () => void;
+  onNavigateToSurah: (surahNumber: number) => void;
 }
 
 const BASMALA = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+
 function removeDiacritics(text: string): string {
-  // Remove Arabic diacritics (tashkeel) - Unicode range 0610-061A, 064B-065F, 0670, 06D6-06DC, 06DF-06E4, 06E7-06E8, 06EA-06ED
   return text.replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7-\u06E8\u06EA-\u06ED]/g, "");
 }
 
 function stripBasmala(text: string): string {
   const plain = removeDiacritics(text);
-  // Match "بسم الله الرحمن الرحيم" or "بسم ٱلله ٱلرحمن ٱلرحيم" without diacritics
   const match = plain.match(/^بسم\s+[ٱا]لله\s+[ٱا]لرحم[ـٰ]?ن\s+[ٱا]لرحيم\s*/);
   if (match) {
-    // Find the same length in the original text
-    // Count characters without diacritics to find position in original
     let plainIdx = 0;
     let origIdx = 0;
     const targetLen = match[0].length;
@@ -38,7 +37,7 @@ function stripBasmala(text: string): string {
   return text;
 }
 
-const QuranReader = ({ surahInfo, onBack }: QuranReaderProps) => {
+const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah }: QuranReaderProps) => {
   const [fontSize, setFontSize] = useState(28);
   const [ayahs, setAyahs] = useState<AyahText[]>([]);
   const [tafsirMap, setTafsirMap] = useState<Record<number, string>>({});
@@ -48,6 +47,8 @@ const QuranReader = ({ surahInfo, onBack }: QuranReaderProps) => {
 
   const handleZoomIn = useCallback(() => setFontSize((s) => Math.min(s + 4, 56)), []);
   const handleZoomOut = useCallback(() => setFontSize((s) => Math.max(s - 4, 16)), []);
+
+  const nextSurah = allSurahs.find((s) => s.number === surahInfo.number + 1);
 
   useEffect(() => {
     setLoading(true);
@@ -68,11 +69,6 @@ const QuranReader = ({ surahInfo, onBack }: QuranReaderProps) => {
       .catch(() => setError("تعذر تحميل السورة. تحقق من اتصالك بالإنترنت."))
       .finally(() => setLoading(false));
   }, [surahInfo.number]);
-
-  // The API already includes Basmala in the first ayah text, so no need to show it separately
-
-  // For Al-Fatiha, first ayah IS the basmala, so we show all ayahs.
-  // For other surahs, the basmala is separate, not counted as an ayah.
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -118,8 +114,7 @@ const QuranReader = ({ surahInfo, onBack }: QuranReaderProps) => {
 
         {!loading && !error && (
           <>
-
-            {/* Basmala: separate line for surahs other than Al-Fatiha (1) and At-Tawbah (9) */}
+            {/* Basmala */}
             {surahInfo.number !== 1 && surahInfo.number !== 9 && (
               <p
                 className="font-quran quran-text-color text-center leading-loose mb-6"
@@ -134,16 +129,16 @@ const QuranReader = ({ surahInfo, onBack }: QuranReaderProps) => {
               style={{ fontSize, lineHeight: 2.2 }}
             >
               {ayahs.map((ayah) => {
-                // Strip basmala from first ayah for surahs other than Al-Fatiha and At-Tawbah
                 const displayText =
                   ayah.numberInSurah === 1 && surahInfo.number !== 1 && surahInfo.number !== 9
                     ? stripBasmala(ayah.text)
                     : ayah.text;
+                const isSajda = hasSajda(ayah);
                 return (
                   <span key={ayah.numberInSurah}>
-                    <span>{displayText}</span>{" "}
+                    <span className={isSajda ? "sajda-text" : ""}>{displayText}</span>{" "}
                     <span
-                      className="verse-marker"
+                      className={`verse-marker ${isSajda ? "sajda-marker" : ""}`}
                       style={{ fontSize: fontSize * 0.7 }}
                       onClick={() => setSelectedAyah(ayah.numberInSurah)}
                       role="button"
@@ -151,11 +146,42 @@ const QuranReader = ({ surahInfo, onBack }: QuranReaderProps) => {
                       aria-label={`تفسير الآية ${ayah.numberInSurah}`}
                     >
                       ﴿{toEasternArabic(ayah.numberInSurah)}﴾
-                    </span>{" "}
+                    </span>
+                    {isSajda && (
+                      <span className="sajda-badge" style={{ fontSize: fontSize * 0.5 }}>
+                        ۩ سجدة
+                      </span>
+                    )}
+                    {" "}
                   </span>
                 );
               })}
             </p>
+
+            {/* Next Surah Separator */}
+            {nextSurah && (
+              <button
+                onClick={() => onNavigateToSurah(nextSurah.number)}
+                className="next-surah-separator group w-full mt-12 mb-6"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex-1 h-px gold-divider" />
+                  <span className="text-xs text-muted-foreground">❊</span>
+                  <div className="flex-1 h-px gold-divider" />
+                </div>
+                <div className="flex items-center justify-center gap-2 py-4 px-6 rounded-xl bg-primary/5 border border-primary/20 transition-all duration-300 group-hover:bg-primary/10 group-hover:border-primary/40 group-active:scale-[0.98]">
+                  <ChevronLeft className="w-4 h-4 text-primary transition-transform duration-300 group-hover:-translate-x-1" />
+                  <span className="font-quran text-primary text-lg">
+                    السورة التالية {nextSurah.name}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 mt-3">
+                  <div className="flex-1 h-px gold-divider" />
+                  <span className="text-xs text-muted-foreground">❊</span>
+                  <div className="flex-1 h-px gold-divider" />
+                </div>
+              </button>
+            )}
           </>
         )}
       </div>

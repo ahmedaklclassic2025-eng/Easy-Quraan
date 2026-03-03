@@ -127,4 +127,49 @@
     background: hsl(var(--secondary));
     transform: scale(0.98);
   }
+
+  /* Sajda indicators */
+  .sajda-text {
+    background: linear-gradient(
+      180deg,
+      transparent 60%,
+      hsl(var(--accent) / 0.15) 100%
+    );
+    border-radius: 4px;
+    padding: 0 4px;
+  }
+
+  .sajda-marker {
+    animation: sajda-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .sajda-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: hsl(var(--destructive));
+    font-family: 'Amiri', serif;
+    font-weight: 700;
+    margin-inline-start: 4px;
+    animation: sajda-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    white-space: nowrap;
+  }
+
+  @keyframes sajda-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(1.05);
+    }
+  }
+
+  .next-surah-separator {
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
 }
