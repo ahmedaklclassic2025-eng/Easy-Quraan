@@ -11,6 +11,32 @@ interface QuranReaderProps {
 }
 
 const BASMALA = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+function removeDiacritics(text: string): string {
+  // Remove Arabic diacritics (tashkeel) - Unicode range 0610-061A, 064B-065F, 0670, 06D6-06DC, 06DF-06E4, 06E7-06E8, 06EA-06ED
+  return text.replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7-\u06E8\u06EA-\u06ED]/g, "");
+}
+
+function stripBasmala(text: string): string {
+  const plain = removeDiacritics(text);
+  // Match "بسم الله الرحمن الرحيم" or "بسم ٱلله ٱلرحمن ٱلرحيم" without diacritics
+  const match = plain.match(/^بسم\s+[ٱا]لله\s+[ٱا]لرحم[ـٰ]?ن\s+[ٱا]لرحيم\s*/);
+  if (match) {
+    // Find the same length in the original text
+    // Count characters without diacritics to find position in original
+    let plainIdx = 0;
+    let origIdx = 0;
+    const targetLen = match[0].length;
+    while (plainIdx < targetLen && origIdx < text.length) {
+      const ch = text[origIdx];
+      origIdx++;
+      if (!/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7-\u06E8\u06EA-\u06ED]/.test(ch)) {
+        plainIdx++;
+      }
+    }
+    return text.substring(origIdx).trim();
+  }
+  return text;
+}
 
 const QuranReader = ({ surahInfo, onBack }: QuranReaderProps) => {
   const [fontSize, setFontSize] = useState(28);
@@ -93,25 +119,42 @@ const QuranReader = ({ surahInfo, onBack }: QuranReaderProps) => {
         {!loading && !error && (
           <>
 
+            {/* Basmala: separate line for surahs other than Al-Fatiha (1) and At-Tawbah (9) */}
+            {surahInfo.number !== 1 && surahInfo.number !== 9 && (
+              <p
+                className="font-quran quran-text-color text-center leading-loose mb-6"
+                style={{ fontSize, lineHeight: 2.2 }}
+              >
+                {BASMALA}
+              </p>
+            )}
+
             <p
               className="font-quran quran-text-color text-justify leading-loose"
               style={{ fontSize, lineHeight: 2.2 }}
             >
-              {ayahs.map((ayah) => (
-                <span key={ayah.numberInSurah}>
-                  <span>{ayah.text}</span>{" "}
-                  <span
-                    className="verse-marker"
-                    style={{ fontSize: fontSize * 0.7 }}
-                    onClick={() => setSelectedAyah(ayah.numberInSurah)}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`تفسير الآية ${ayah.numberInSurah}`}
-                  >
-                    ﴿{toEasternArabic(ayah.numberInSurah)}﴾
-                  </span>{" "}
-                </span>
-              ))}
+              {ayahs.map((ayah) => {
+                // Strip basmala from first ayah for surahs other than Al-Fatiha and At-Tawbah
+                const displayText =
+                  ayah.numberInSurah === 1 && surahInfo.number !== 1 && surahInfo.number !== 9
+                    ? stripBasmala(ayah.text)
+                    : ayah.text;
+                return (
+                  <span key={ayah.numberInSurah}>
+                    <span>{displayText}</span>{" "}
+                    <span
+                      className="verse-marker"
+                      style={{ fontSize: fontSize * 0.7 }}
+                      onClick={() => setSelectedAyah(ayah.numberInSurah)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`تفسير الآية ${ayah.numberInSurah}`}
+                    >
+                      ﴿{toEasternArabic(ayah.numberInSurah)}﴾
+                    </span>{" "}
+                  </span>
+                );
+              })}
             </p>
           </>
         )}
