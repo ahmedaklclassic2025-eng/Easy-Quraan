@@ -5,19 +5,25 @@ import { toEasternArabic } from "@/lib/arabicNumerals";
 
 interface SurahListProps {
   onSelect: (surah: SurahInfo) => void;
+  surahs?: SurahInfo[];
 }
 
-const SurahList = ({ onSelect }: SurahListProps) => {
-  const [surahs, setSurahs] = useState<SurahInfo[]>([]);
-  const [loading, setLoading] = useState(true);
+const SurahList = ({ onSelect, surahs: propSurahs }: SurahListProps) => {
+  const [surahs, setSurahs] = useState<SurahInfo[]>(propSurahs || []);
+  const [loading, setLoading] = useState(!propSurahs?.length);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (propSurahs?.length) {
+      setSurahs(propSurahs);
+      setLoading(false);
+      return;
+    }
     fetchAllSurahs()
       .then(setSurahs)
       .catch(() => setError("تعذر تحميل قائمة السور. تحقق من اتصالك بالإنترنت."))
       .finally(() => setLoading(false));
-  }, []);
+  }, [propSurahs]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
