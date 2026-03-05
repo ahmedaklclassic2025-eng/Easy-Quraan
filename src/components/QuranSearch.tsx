@@ -106,7 +106,7 @@ const QuranSearch = ({ allSurahs, onNavigateToAyah, onClose }: QuranSearchProps)
               <button
                 key={`${r.surahNumber}-${r.ayahNumber}-${i}`}
                 onClick={() => {
-                  onNavigateToAyah(r.surahNumber);
+                  onNavigateToAyah(r.surahNumber, r.ayahNumber);
                   onClose();
                 }}
                 className="surah-card rounded-xl px-4 py-3 text-right w-full"
