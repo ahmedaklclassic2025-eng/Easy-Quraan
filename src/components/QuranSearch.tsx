@@ -12,7 +12,7 @@ interface SearchResult {
 
 interface QuranSearchProps {
   allSurahs: SurahInfo[];
-  onNavigateToAyah: (surahNumber: number) => void;
+  onNavigateToAyah: (surahNumber: number, ayahNumber: number) => void;
   onClose: () => void;
 }
 
