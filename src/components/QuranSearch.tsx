@@ -31,7 +31,7 @@ const QuranSearch = ({ allSurahs, onNavigateToAyah, onClose }: QuranSearchProps)
     setLoading(true);
     setSearched(true);
     try {
-      const res = await fetch(`${BASE_URL}/search/${encodeURIComponent(trimmed)}/all/quran-simple`);
+      const res = await fetch(`${BASE_URL}/search/${encodeURIComponent(trimmed)}/all/quran-simple-clean`);
       if (!res.ok) throw new Error("Search failed");
       const json = await res.json();
       
