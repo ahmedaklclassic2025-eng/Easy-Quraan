@@ -39,7 +39,7 @@ function stripBasmala(text: string): string {
   return text;
 }
 
-const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah }: QuranReaderProps) => {
+const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highlightAyah }: QuranReaderProps) => {
   const [fontSize, setFontSize] = useState(28);
   const [ayahs, setAyahs] = useState<AyahText[]>([]);
   const [tafsirMap, setTafsirMap] = useState<Record<number, string>>({});
