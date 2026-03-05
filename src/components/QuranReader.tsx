@@ -78,6 +78,17 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highligh
       .finally(() => setLoading(false));
   }, [surahInfo.number]);
 
+  useEffect(() => {
+    if (!loading && highlightAyah) {
+      setTimeout(() => {
+        const el = document.getElementById(`ayah-${highlightAyah}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 200);
+    }
+  }, [loading, highlightAyah]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SurahHeader
