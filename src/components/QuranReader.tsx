@@ -52,6 +52,12 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah }: QuranR
   const nextSurah = allSurahs.find((s) => s.number === surahInfo.number + 1);
 
   useEffect(() => {
+    saveReadingPosition({
+      surahNumber: surahInfo.number,
+      surahName: surahInfo.name,
+      timestamp: Date.now(),
+    });
+
     setLoading(true);
     setError(null);
 
