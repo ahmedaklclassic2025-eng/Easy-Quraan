@@ -1,17 +1,24 @@
 import { useState, useEffect } from "react";
-import { BookOpen, Loader2 } from "lucide-react";
+import { BookOpen, Loader2, Search, BookmarkCheck } from "lucide-react";
 import { fetchAllSurahs, revelationTypeArabic, type SurahInfo } from "@/lib/quranApi";
 import { toEasternArabic } from "@/lib/arabicNumerals";
+import { getReadingPosition, type ReadingPosition } from "@/lib/readingPosition";
 
 interface SurahListProps {
   onSelect: (surah: SurahInfo) => void;
   surahs?: SurahInfo[];
+  onOpenSearch: () => void;
 }
 
-const SurahList = ({ onSelect, surahs: propSurahs }: SurahListProps) => {
+const SurahList = ({ onSelect, surahs: propSurahs, onOpenSearch }: SurahListProps) => {
   const [surahs, setSurahs] = useState<SurahInfo[]>(propSurahs || []);
   const [loading, setLoading] = useState(!propSurahs?.length);
   const [error, setError] = useState<string | null>(null);
+  const [bookmark, setBookmark] = useState<ReadingPosition | null>(null);
+
+  useEffect(() => {
+    setBookmark(getReadingPosition());
+  }, []);
 
   useEffect(() => {
     if (propSurahs?.length) {
@@ -24,6 +31,12 @@ const SurahList = ({ onSelect, surahs: propSurahs }: SurahListProps) => {
       .catch(() => setError("تعذر تحميل قائمة السور. تحقق من اتصالك بالإنترنت."))
       .finally(() => setLoading(false));
   }, [propSurahs]);
+
+  const handleBookmarkClick = () => {
+    if (!bookmark) return;
+    const surah = surahs.find(s => s.number === bookmark.surahNumber);
+    if (surah) onSelect(surah);
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -40,6 +53,27 @@ const SurahList = ({ onSelect, surahs: propSurahs }: SurahListProps) => {
 
       {/* Content */}
       <div className="flex-1 px-4 py-4 max-w-lg mx-auto w-full">
+        {/* Search & Bookmark */}
+        <div className="flex flex-col gap-2 mb-4">
+          <button
+            onClick={onOpenSearch}
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-secondary text-muted-foreground text-sm"
+          >
+            <Search className="w-4 h-4" />
+            <span>ابحث في القرآن الكريم...</span>
+          </button>
+
+          {bookmark && (
+            <button
+              onClick={handleBookmarkClick}
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 text-sm"
+            >
+              <BookmarkCheck className="w-4 h-4 text-primary" />
+              <span className="text-foreground font-quran">متابعة القراءة: {bookmark.surahName}</span>
+            </button>
+          )}
+        </div>
+
         {loading && (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />

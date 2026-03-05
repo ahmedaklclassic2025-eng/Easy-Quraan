@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Loader2, ChevronLeft } from "lucide-react";
 import { fetchSurahText, fetchSurahTafsir, revelationTypeArabic, hasSajda, type SurahInfo, type AyahText } from "@/lib/quranApi";
 import { toEasternArabic } from "@/lib/arabicNumerals";
+import { saveReadingPosition } from "@/lib/readingPosition";
 import SurahHeader from "./SurahHeader";
 import TafsirPopup from "./TafsirPopup";
 
@@ -51,6 +52,12 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah }: QuranR
   const nextSurah = allSurahs.find((s) => s.number === surahInfo.number + 1);
 
   useEffect(() => {
+    saveReadingPosition({
+      surahNumber: surahInfo.number,
+      surahName: surahInfo.name,
+      timestamp: Date.now(),
+    });
+
     setLoading(true);
     setError(null);
 
