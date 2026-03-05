@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Loader2, ChevronLeft } from "lucide-react";
 import { fetchSurahText, fetchSurahTafsir, revelationTypeArabic, hasSajda, type SurahInfo, type AyahText } from "@/lib/quranApi";
 import { toEasternArabic } from "@/lib/arabicNumerals";
+import { saveReadingPosition } from "@/lib/readingPosition";
 import SurahHeader from "./SurahHeader";
 import TafsirPopup from "./TafsirPopup";
 
