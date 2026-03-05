@@ -12,7 +12,7 @@ interface SearchResult {
 
 interface QuranSearchProps {
   allSurahs: SurahInfo[];
-  onNavigateToAyah: (surahNumber: number) => void;
+  onNavigateToAyah: (surahNumber: number, ayahNumber: number) => void;
   onClose: () => void;
 }
 
@@ -106,7 +106,7 @@ const QuranSearch = ({ allSurahs, onNavigateToAyah, onClose }: QuranSearchProps)
               <button
                 key={`${r.surahNumber}-${r.ayahNumber}-${i}`}
                 onClick={() => {
-                  onNavigateToAyah(r.surahNumber);
+                  onNavigateToAyah(r.surahNumber, r.ayahNumber);
                   onClose();
                 }}
                 className="surah-card rounded-xl px-4 py-3 text-right w-full"

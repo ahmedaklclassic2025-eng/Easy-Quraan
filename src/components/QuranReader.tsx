@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Loader2, ChevronLeft } from "lucide-react";
 import { fetchSurahText, fetchSurahTafsir, revelationTypeArabic, hasSajda, type SurahInfo, type AyahText } from "@/lib/quranApi";
 import { toEasternArabic } from "@/lib/arabicNumerals";
@@ -11,6 +11,7 @@ interface QuranReaderProps {
   allSurahs: SurahInfo[];
   onBack: () => void;
   onNavigateToSurah: (surahNumber: number) => void;
+  highlightAyah?: number;
 }
 
 const BASMALA = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
@@ -38,7 +39,7 @@ function stripBasmala(text: string): string {
   return text;
 }
 
-const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah }: QuranReaderProps) => {
+const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highlightAyah }: QuranReaderProps) => {
   const [fontSize, setFontSize] = useState(28);
   const [ayahs, setAyahs] = useState<AyahText[]>([]);
   const [tafsirMap, setTafsirMap] = useState<Record<number, string>>({});
@@ -76,6 +77,17 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah }: QuranR
       .catch(() => setError("تعذر تحميل السورة. تحقق من اتصالك بالإنترنت."))
       .finally(() => setLoading(false));
   }, [surahInfo.number]);
+
+  useEffect(() => {
+    if (!loading && highlightAyah) {
+      setTimeout(() => {
+        const el = document.getElementById(`ayah-${highlightAyah}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 200);
+    }
+  }, [loading, highlightAyah]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -142,8 +154,8 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah }: QuranR
                     : ayah.text;
                 const isSajda = hasSajda(ayah);
                 return (
-                  <span key={ayah.numberInSurah}>
-                    <span className={isSajda ? "sajda-text" : ""}>{displayText}</span>{" "}
+                  <span key={ayah.numberInSurah} id={`ayah-${ayah.numberInSurah}`}>
+                    <span className={`${isSajda ? "sajda-text" : ""} ${ayah.numberInSurah === highlightAyah ? "bg-primary/15 rounded px-1" : ""}`}>{displayText}</span>{" "}
                     <span
                       className={`verse-marker ${isSajda ? "sajda-marker" : ""}`}
                       style={{ fontSize: fontSize * 0.7 }}
