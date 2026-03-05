@@ -11,6 +11,7 @@ interface QuranReaderProps {
   allSurahs: SurahInfo[];
   onBack: () => void;
   onNavigateToSurah: (surahNumber: number) => void;
+  highlightAyah?: number;
 }
 
 const BASMALA = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
