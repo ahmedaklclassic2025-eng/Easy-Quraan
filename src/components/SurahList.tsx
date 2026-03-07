@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { BookOpen, Loader2, Search, BookmarkCheck } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 import { fetchAllSurahs, revelationTypeArabic, type SurahInfo } from "@/lib/quranApi";
 import { toEasternArabic } from "@/lib/arabicNumerals";
 import { getReadingPosition, type ReadingPosition } from "@/lib/readingPosition";
