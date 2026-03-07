@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 import { toEasternArabic } from "@/lib/arabicNumerals";
 
 interface SurahHeaderProps {
