@@ -42,7 +42,10 @@ const SurahList = ({ onSelect, surahs: propSurahs, onOpenSearch }: SurahListProp
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <div className="header-gradient px-4 py-8 text-primary-foreground text-center">
+      <div className="header-gradient px-4 py-8 text-primary-foreground text-center relative">
+        <div className="absolute top-3 left-3">
+          <ThemeToggle />
+        </div>
         <div className="flex justify-center mb-3">
           <div className="w-14 h-14 rounded-full bg-primary-foreground/15 flex items-center justify-center">
             <BookOpen className="w-7 h-7" />

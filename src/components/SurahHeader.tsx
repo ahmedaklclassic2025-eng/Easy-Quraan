@@ -20,7 +20,7 @@ const SurahHeader = ({ name, revelationType, ayahCount, onBack }: SurahHeaderPro
           <h1 className="text-xl font-bold font-quran">{name}</h1>
           <p className="text-xs opacity-80">{revelationType} • {toEasternArabic(ayahCount)} آيات</p>
         </div>
-        <div className="w-10" />
+        <ThemeToggle />
       </div>
     </div>
   );
