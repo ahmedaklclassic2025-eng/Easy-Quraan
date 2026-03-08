@@ -100,10 +100,23 @@
     @apply border-border;
   }
 
+  html, body {
+    /* Support for safe area insets on mobile devices */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Amiri', serif;
     direction: rtl;
+  }
+
+  #root {
+    height: 100%;
+    overflow: auto;
   }
 }
 
