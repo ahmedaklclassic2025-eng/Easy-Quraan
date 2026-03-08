@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Auto Sync to GitHub",
+  "description": "يقوم تلقائياً بعمل commit و push للتغييرات إلى GitHub بعد كل تعديل على ملفات المشروع",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "git add . && git commit -m \"Auto sync: Updates from Kiro\" && git push origin main",
+    "timeout": 120
+  },
+  "workspaceFolderName": "quraan-easy-read-main",
+  "shortName": "auto-sync-github"
+}
