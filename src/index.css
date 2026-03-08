@@ -1,0 +1,214 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 30% 96%;
+    --foreground: 150 20% 15%;
+
+    --card: 40 25% 93%;
+    --card-foreground: 150 20% 15%;
+
+    --popover: 40 30% 97%;
+    --popover-foreground: 150 20% 15%;
+
+    --primary: 155 35% 25%;
+    --primary-foreground: 40 30% 96%;
+
+    --secondary: 40 40% 88%;
+    --secondary-foreground: 150 20% 15%;
+
+    --muted: 40 20% 90%;
+    --muted-foreground: 150 10% 45%;
+
+    --accent: 42 70% 50%;
+    --accent-foreground: 150 20% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 40 20% 85%;
+    --input: 40 20% 85%;
+    --ring: 155 35% 25%;
+
+    --radius: 0.75rem;
+
+    --quran-text: 150 25% 12%;
+    --quran-verse-marker: 42 70% 45%;
+    --quran-bg: 40 35% 95%;
+    --header-gradient-from: 155 40% 22%;
+    --header-gradient-to: 155 30% 30%;
+    --tafsir-bg: 40 30% 98%;
+    --tafsir-border: 42 50% 70%;
+    --gold-glow: 42 70% 50%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 160 15% 10%;
+    --foreground: 40 20% 90%;
+
+    --card: 160 12% 14%;
+    --card-foreground: 40 20% 90%;
+
+    --popover: 160 15% 12%;
+    --popover-foreground: 40 20% 90%;
+
+    --primary: 155 35% 40%;
+    --primary-foreground: 40 20% 92%;
+
+    --secondary: 160 10% 18%;
+    --secondary-foreground: 40 20% 90%;
+
+    --muted: 160 8% 20%;
+    --muted-foreground: 40 10% 60%;
+
+    --accent: 42 70% 50%;
+    --accent-foreground: 160 15% 10%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 40 20% 90%;
+
+    --border: 160 8% 22%;
+    --input: 160 8% 22%;
+    --ring: 155 35% 40%;
+
+    --quran-text: 40 20% 88%;
+    --quran-verse-marker: 42 70% 55%;
+    --quran-bg: 160 15% 10%;
+    --header-gradient-from: 155 40% 18%;
+    --header-gradient-to: 155 30% 24%;
+    --tafsir-bg: 160 12% 13%;
+    --tafsir-border: 42 40% 35%;
+    --gold-glow: 42 70% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Amiri', serif;
+    direction: rtl;
+  }
+}
+
+@layer utilities {
+  .font-quran {
+    font-family: 'Amiri Quran', 'Amiri', serif;
+  }
+
+  .header-gradient {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--header-gradient-from)),
+      hsl(var(--header-gradient-to))
+    );
+  }
+
+  .gold-divider {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--gold-glow)),
+      transparent
+    );
+  }
+
+  .verse-marker {
+    color: hsl(var(--quran-verse-marker));
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Amiri', serif;
+    font-weight: 700;
+  }
+
+  .verse-marker:hover,
+  .verse-marker:active {
+    transform: scale(1.2);
+    filter: brightness(1.2);
+  }
+
+  .quran-text-color {
+    color: hsl(var(--quran-text));
+  }
+
+  .tafsir-card {
+    background: hsl(var(--tafsir-bg));
+    border: 1px solid hsl(var(--tafsir-border));
+    border-radius: var(--radius);
+  }
+
+  .surah-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    transition: all 0.2s ease;
+  }
+
+  .surah-card:active {
+    background: hsl(var(--secondary));
+    transform: scale(0.98);
+  }
+
+  /* Sajda indicators */
+  .sajda-text {
+    background: linear-gradient(
+      180deg,
+      transparent 60%,
+      hsl(var(--accent) / 0.15) 100%
+    );
+    border-radius: 4px;
+    padding: 0 4px;
+  }
+
+  .sajda-marker {
+    animation: sajda-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .sajda-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: hsl(var(--destructive));
+    font-family: 'Amiri', serif;
+    font-weight: 700;
+    margin-inline-start: 4px;
+    animation: sajda-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    white-space: nowrap;
+  }
+
+  @keyframes sajda-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(1.05);
+    }
+  }
+
+  .next-surah-separator {
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+}
