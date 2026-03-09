@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">القرآن الميسر</string>
-    <string name="title_activity_main">القرآن الميسر</string>
+    <string name="app_name">المصحف الميسر</string>
+    <string name="title_activity_main">المصحف الميسر</string>
     <string name="package_name">com.easyquraan.app</string>
     <string name="custom_url_scheme">com.easyquraan.app</string>
 </resources>

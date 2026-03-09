@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.easyquraan.app',
-  appName: 'القرآن الميسر',
+  appName: 'المصحف الميسر',
   webDir: 'dist',
   android: {
     allowMixedContent: true,
