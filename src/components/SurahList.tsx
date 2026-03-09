@@ -47,9 +47,11 @@ const SurahList = ({ onSelect, surahs: propSurahs, onOpenSearch }: SurahListProp
           <ThemeToggle />
         </div>
         <div className="flex justify-center mb-3">
-          <div className="w-14 h-14 rounded-full bg-primary-foreground/15 flex items-center justify-center">
-            <BookOpen className="w-7 h-7" />
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="شعار المصحف الميسّر" 
+            className="w-20 h-20 object-contain"
+          />
         </div>
         <h1 className="text-2xl font-bold font-quran mb-1">المصحف الميسّر</h1>
         <p className="text-sm opacity-80">اقرأ القرآن بيسر وسهولة</p>
