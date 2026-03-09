@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Search, Loader2, X } from "lucide-react";
 import { toEasternArabic } from "@/lib/arabicNumerals";
 import type { SurahInfo } from "@/lib/quranApi";
@@ -29,69 +29,72 @@ const QuranSearch = ({ allSurahs, onNavigateToAyah, onClose }: QuranSearchProps)
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  const handleSearch = useCallback(async () => {
+  // Debounced search effect - searches automatically as user types
+  useEffect(() => {
     const trimmed = query.trim();
-    if (!trimmed || trimmed.length < 2) return;
+    if (!trimmed || trimmed.length < 2) {
+      setResults([]);
+      setSearched(false);
+      return;
+    }
 
     setLoading(true);
     setSearched(true);
-    try {
-      // Remove diacritics from search query for better matching
-      const cleanQuery = removeDiacritics(trimmed);
-      
-      // Use quran-simple-clean edition which has no diacritics for better search results
-      const res = await fetch(`${BASE_URL}/search/${encodeURIComponent(cleanQuery)}/all/quran-simple-clean`);
-      if (!res.ok) throw new Error("Search failed");
-      const json = await res.json();
-      
-      if (json.code === 200 && json.data?.matches) {
-        const mapped: SearchResult[] = json.data.matches.map((m: any) => {
-          const surah = allSurahs.find(s => s.number === m.surah.number);
-          return {
-            surahNumber: m.surah.number,
-            surahName: surah?.name || m.surah.name,
-            ayahNumber: m.numberInSurah,
-            text: m.text,
-          };
-        });
-        setResults(mapped.slice(0, 50));
-      } else {
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        // Remove diacritics from search query for better matching
+        const cleanQuery = removeDiacritics(trimmed);
+        
+        // Use quran-simple-clean edition which has no diacritics for better search results
+        const res = await fetch(`${BASE_URL}/search/${encodeURIComponent(cleanQuery)}/all/quran-simple-clean`);
+        if (!res.ok) throw new Error("Search failed");
+        const json = await res.json();
+        
+        if (json.code === 200 && json.data?.matches) {
+          const mapped: SearchResult[] = json.data.matches.map((m: any) => {
+            const surah = allSurahs.find(s => s.number === m.surah.number);
+            return {
+              surahNumber: m.surah.number,
+              surahName: surah?.name || m.surah.name,
+              ayahNumber: m.numberInSurah,
+              text: m.text,
+            };
+          });
+          setResults(mapped.slice(0, 50));
+        } else {
+          setResults([]);
+        }
+      } catch {
         setResults([]);
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(timeoutId);
   }, [query, allSurahs]);
 
   return (
     <div className="fixed inset-0 z-50 bg-background flex flex-col">
-      {/* Header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-card">
-        <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:bg-secondary">
+      {/* Header with improved spacing for safe area */}
+      <div className="flex items-center gap-2 px-4 pt-6 pb-4 border-b border-border bg-card">
+        <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground hover:bg-secondary shrink-0">
           <X className="w-5 h-5" />
         </button>
-        <div className="flex-1 flex items-center gap-2 bg-secondary rounded-xl px-3 py-2">
-          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+        <div className="flex-1 flex items-center gap-3 bg-secondary rounded-xl px-4 py-3.5">
+          <Search className="w-5 h-5 text-muted-foreground shrink-0" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder="ابحث في القرآن الكريم..."
-            className="flex-1 bg-transparent outline-none text-foreground text-sm font-quran placeholder:text-muted-foreground"
+            className="flex-1 bg-transparent outline-none text-foreground text-base font-quran placeholder:text-muted-foreground"
             autoFocus
             dir="rtl"
           />
+          {loading && <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />}
         </div>
-        <button
-          onClick={handleSearch}
-          disabled={loading || query.trim().length < 2}
-          className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold disabled:opacity-50"
-        >
-          بحث
-        </button>
       </div>
 
       {/* Results */}
