@@ -18,6 +18,11 @@ interface QuranSearchProps {
 
 const BASE_URL = "https://api.alquran.cloud/v1";
 
+// Function to remove Arabic diacritics (tashkeel)
+const removeDiacritics = (text: string): string => {
+  return text.replace(/[\u064B-\u065F\u0670]/g, '');
+};
+
 const QuranSearch = ({ allSurahs, onNavigateToAyah, onClose }: QuranSearchProps) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -31,7 +36,11 @@ const QuranSearch = ({ allSurahs, onNavigateToAyah, onClose }: QuranSearchProps)
     setLoading(true);
     setSearched(true);
     try {
-      const res = await fetch(`${BASE_URL}/search/${encodeURIComponent(trimmed)}/all/quran-simple-clean`);
+      // Remove diacritics from search query for better matching
+      const cleanQuery = removeDiacritics(trimmed);
+      
+      // Use quran-simple-clean edition which has no diacritics for better search results
+      const res = await fetch(`${BASE_URL}/search/${encodeURIComponent(cleanQuery)}/all/quran-simple-clean`);
       if (!res.ok) throw new Error("Search failed");
       const json = await res.json();
       
