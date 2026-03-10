@@ -157,7 +157,7 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highligh
                 const isSajda = hasSajda(ayah);
                 return (
                   <span key={ayah.numberInSurah} id={`ayah-${ayah.numberInSurah}`}>
-                    <span className={`${isSajda ? "sajda-text" : ""} ${ayah.numberInSurah === highlightAyah ? "bg-primary/15 rounded px-1" : ""}`}>{displayText}</span>{" "}
+                    <span className={`${isSajda ? "sajda-text" : ""} ${ayah.numberInSurah === highlightAyah ? "bg-primary/15 rounded px-1" : ""} ${ayah.numberInSurah === activeAudioAyah ? "bg-accent/20 rounded px-1" : ""}`}>{displayText}</span>{" "}
                     <span
                       className={`verse-marker ${isSajda ? "sajda-marker" : ""}`}
                       style={{ fontSize: fontSize * 0.7 }}
