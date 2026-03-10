@@ -5,6 +5,7 @@ import { toEasternArabic } from "@/lib/arabicNumerals";
 import { saveReadingPosition } from "@/lib/readingPosition";
 import SurahHeader from "./SurahHeader";
 import TafsirPopup from "./TafsirPopup";
+import AudioPlayer from "./AudioPlayer";
 
 interface QuranReaderProps {
   surahInfo: SurahInfo;
