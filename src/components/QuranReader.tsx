@@ -47,6 +47,7 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highligh
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedAyah, setSelectedAyah] = useState<number | null>(null);
+  const [activeAudioAyah, setActiveAudioAyah] = useState<number | null>(null);
 
   const handleZoomIn = useCallback(() => setFontSize((s) => Math.min(s + 4, 56)), []);
   const handleZoomOut = useCallback(() => setFontSize((s) => Math.max(s - 4, 16)), []);
