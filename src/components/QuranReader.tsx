@@ -214,6 +214,17 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highligh
         surahName={surahInfo.name}
         onClose={() => setSelectedAyah(null)}
       />
+
+      <AudioPlayer
+        surahNumber={surahInfo.number}
+        surahName={surahInfo.name}
+        totalAyahs={surahInfo.numberOfAyahs}
+        onAyahChange={(ayahNum) => {
+          setActiveAudioAyah(ayahNum);
+          const el = document.getElementById(`ayah-${ayahNum}`);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }}
+      />
     </div>
   );
 };
