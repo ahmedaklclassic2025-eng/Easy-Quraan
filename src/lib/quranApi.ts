@@ -65,3 +65,22 @@ export function hasSajda(ayah: AyahText): boolean {
   if (ayah.sajda && typeof ayah.sajda === "object") return true;
   return false;
 }
+
+export interface AyahAudio {
+  number: number;
+  audio: string;
+  numberInSurah: number;
+}
+
+export interface SurahWithAudio {
+  number: number;
+  name: string;
+  ayahs: AyahAudio[];
+}
+
+export async function fetchSurahAudio(surahNumber: number): Promise<SurahWithAudio> {
+  const res = await fetch(`${BASE_URL}/surah/${surahNumber}/ar.alafasy`);
+  if (!res.ok) throw new Error("Failed to fetch audio");
+  const json: QuranApiResponse<SurahWithAudio> = await res.json();
+  return json.data;
+}

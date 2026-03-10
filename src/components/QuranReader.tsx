@@ -5,6 +5,7 @@ import { toEasternArabic } from "@/lib/arabicNumerals";
 import { saveReadingPosition } from "@/lib/readingPosition";
 import SurahHeader from "./SurahHeader";
 import TafsirPopup from "./TafsirPopup";
+import AudioPlayer from "./AudioPlayer";
 
 interface QuranReaderProps {
   surahInfo: SurahInfo;
@@ -46,6 +47,7 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highligh
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedAyah, setSelectedAyah] = useState<number | null>(null);
+  const [activeAudioAyah, setActiveAudioAyah] = useState<number | null>(null);
 
   const handleZoomIn = useCallback(() => setFontSize((s) => Math.min(s + 4, 56)), []);
   const handleZoomOut = useCallback(() => setFontSize((s) => Math.max(s - 4, 16)), []);
@@ -155,7 +157,7 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highligh
                 const isSajda = hasSajda(ayah);
                 return (
                   <span key={ayah.numberInSurah} id={`ayah-${ayah.numberInSurah}`}>
-                    <span className={`${isSajda ? "sajda-text" : ""} ${ayah.numberInSurah === highlightAyah ? "bg-primary/15 rounded px-1" : ""}`}>{displayText}</span>{" "}
+                    <span className={`${isSajda ? "sajda-text" : ""} ${ayah.numberInSurah === highlightAyah ? "bg-primary/15 rounded px-1" : ""} ${ayah.numberInSurah === activeAudioAyah ? "bg-accent/20 rounded px-1" : ""}`}>{displayText}</span>{" "}
                     <span
                       className={`verse-marker ${isSajda ? "sajda-marker" : ""}`}
                       style={{ fontSize: fontSize * 0.7 }}
@@ -211,6 +213,17 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highligh
         tafsirText={selectedAyah ? tafsirMap[selectedAyah] || "" : ""}
         surahName={surahInfo.name}
         onClose={() => setSelectedAyah(null)}
+      />
+
+      <AudioPlayer
+        surahNumber={surahInfo.number}
+        surahName={surahInfo.name}
+        totalAyahs={surahInfo.numberOfAyahs}
+        onAyahChange={(ayahNum) => {
+          setActiveAudioAyah(ayahNum);
+          const el = document.getElementById(`ayah-${ayahNum}`);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }}
       />
     </div>
   );
