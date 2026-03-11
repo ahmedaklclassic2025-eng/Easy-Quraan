@@ -7,10 +7,11 @@ interface AudioPlayerProps {
   surahNumber: number;
   surahName: string;
   totalAyahs: number;
+  startFromAyah?: number | null;
   onAyahChange?: (ayahNumber: number) => void;
 }
 
-const AudioPlayer = ({ surahNumber, surahName, totalAyahs, onAyahChange }: AudioPlayerProps) => {
+const AudioPlayer = ({ surahNumber, surahName, totalAyahs, startFromAyah, onAyahChange }: AudioPlayerProps) => {
   const [audioData, setAudioData] = useState<AyahAudio[]>([]);
   const [currentAyah, setCurrentAyah] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -87,6 +88,13 @@ const AudioPlayer = ({ surahNumber, surahName, totalAyahs, onAyahChange }: Audio
     },
     [audioData, totalAyahs, onAyahChange, updateProgress]
   );
+
+  // Handle startFromAyah changes
+  useEffect(() => {
+    if (startFromAyah && audioData.length > 0) {
+      playAyah(startFromAyah);
+    }
+  }, [startFromAyah]);
 
   const togglePlay = () => {
     if (!audioRef.current || !audioData.length) {

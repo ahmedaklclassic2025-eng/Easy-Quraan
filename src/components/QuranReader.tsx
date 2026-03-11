@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Loader2, ChevronLeft } from "lucide-react";
 import { fetchSurahText, fetchSurahTafsir, revelationTypeArabic, hasSajda, type SurahInfo, type AyahText } from "@/lib/quranApi";
 import { toEasternArabic } from "@/lib/arabicNumerals";
@@ -48,6 +48,7 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highligh
   const [error, setError] = useState<string | null>(null);
   const [selectedAyah, setSelectedAyah] = useState<number | null>(null);
   const [activeAudioAyah, setActiveAudioAyah] = useState<number | null>(null);
+  const [startFromAyah, setStartFromAyah] = useState<number | null>(null);
 
   const handleZoomIn = useCallback(() => setFontSize((s) => Math.min(s + 4, 56)), []);
   const handleZoomOut = useCallback(() => setFontSize((s) => Math.max(s - 4, 16)), []);
@@ -90,6 +91,11 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highligh
       }, 200);
     }
   }, [loading, highlightAyah]);
+
+  const handlePlayFromAyah = (ayahNumber: number) => {
+    // Use timestamp to ensure re-trigger even for same ayah
+    setStartFromAyah(ayahNumber + Math.random() * 0.001);
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -213,12 +219,14 @@ const QuranReader = ({ surahInfo, allSurahs, onBack, onNavigateToSurah, highligh
         tafsirText={selectedAyah ? tafsirMap[selectedAyah] || "" : ""}
         surahName={surahInfo.name}
         onClose={() => setSelectedAyah(null)}
+        onPlayFromAyah={handlePlayFromAyah}
       />
 
       <AudioPlayer
         surahNumber={surahInfo.number}
         surahName={surahInfo.name}
         totalAyahs={surahInfo.numberOfAyahs}
+        startFromAyah={startFromAyah}
         onAyahChange={(ayahNum) => {
           setActiveAudioAyah(ayahNum);
           const el = document.getElementById(`ayah-${ayahNum}`);

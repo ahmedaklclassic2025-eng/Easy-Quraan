@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { X, Play } from "lucide-react";
 import { toEasternArabic } from "@/lib/arabicNumerals";
 
 interface TafsirPopupProps {
@@ -8,9 +8,17 @@ interface TafsirPopupProps {
   tafsirText: string;
   surahName: string;
   onClose: () => void;
+  onPlayFromAyah?: (ayahNumber: number) => void;
 }
 
-const TafsirPopup = ({ verseNumber, verseText, tafsirText, surahName, onClose }: TafsirPopupProps) => {
+const TafsirPopup = ({ verseNumber, verseText, tafsirText, surahName, onClose, onPlayFromAyah }: TafsirPopupProps) => {
+  const handlePlay = () => {
+    if (verseNumber && onPlayFromAyah) {
+      onPlayFromAyah(verseNumber);
+      onClose();
+    }
+  };
+
   return (
     <AnimatePresence>
       {verseNumber !== null && (
@@ -33,9 +41,20 @@ const TafsirPopup = ({ verseNumber, verseText, tafsirText, surahName, onClose }:
               <h3 className="text-base font-bold text-primary font-quran">
                 تفسير الآية {toEasternArabic(verseNumber)} من {surahName}
               </h3>
-              <button onClick={onClose} className="p-1.5 rounded-full bg-secondary active:bg-muted transition-colors">
-                <X className="w-4 h-4 text-muted-foreground" />
-              </button>
+              <div className="flex items-center gap-2">
+                {onPlayFromAyah && (
+                  <button
+                    onClick={handlePlay}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 active:scale-95 transition-all"
+                  >
+                    <Play className="w-3 h-3" />
+                    <span>تشغيل من هنا</span>
+                  </button>
+                )}
+                <button onClick={onClose} className="p-1.5 rounded-full bg-secondary active:bg-muted transition-colors">
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
             </div>
             <div className="gold-divider h-px mb-4" />
             <p className="font-quran text-sm leading-8 quran-text-color mb-3 bg-secondary/50 rounded-lg p-3">
