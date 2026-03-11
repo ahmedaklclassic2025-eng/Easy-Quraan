@@ -8,6 +8,8 @@ import QuranReader from "@/components/QuranReader";
 import QuranSearch from "@/components/QuranSearch";
 import AdhkarPage from "@/components/AdhkarPage";
 import DuaKhatmQuran from "@/components/DuaKhatmQuran";
+import QuranicDuasPage from "@/components/QuranicDuasPage";
+import TasbihPage from "@/components/TasbihPage";
 
 type AppView = "home" | "reader" | "search" | SidebarView;
 
@@ -81,6 +83,10 @@ const Index = () => {
         return <AdhkarPage onBack={goHome} />;
       case "dua-khatm":
         return <DuaKhatmQuran onBack={goHome} />;
+      case "quranic-duas":
+        return <QuranicDuasPage onBack={goHome} />;
+      case "tasbih":
+        return <TasbihPage onBack={goHome} />;
       default:
         return (
           <SurahList

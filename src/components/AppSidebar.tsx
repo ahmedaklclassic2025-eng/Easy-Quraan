@@ -1,4 +1,4 @@
-import { Sun, BookOpen, Menu } from "lucide-react";
+import { Sun, BookOpen, Menu, BookHeart, Circle } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +12,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-export type SidebarView = "adhkar" | "dua-khatm";
+export type SidebarView = "adhkar" | "dua-khatm" | "quranic-duas" | "tasbih";
 
 interface AppSidebarProps {
   onNavigate: (view: SidebarView) => void;
@@ -28,6 +28,16 @@ const menuItems = [
     title: "دعاء ختم القرآن",
     icon: BookOpen,
     view: "dua-khatm" as SidebarView,
+  },
+  {
+    title: "أدعية من القرآن",
+    icon: BookHeart,
+    view: "quranic-duas" as SidebarView,
+  },
+  {
+    title: "المسبحة الإلكترونية",
+    icon: Circle,
+    view: "tasbih" as SidebarView,
   },
 ];
 
