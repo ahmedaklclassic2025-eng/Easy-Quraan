@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export type SidebarView = "adhkar" | "dua-khatm";
@@ -31,6 +32,17 @@ const menuItems = [
 ];
 
 export function AppSidebar({ onNavigate }: AppSidebarProps) {
+  const { setOpenMobile, isMobile, setOpen } = useSidebar();
+
+  const handleNavigate = (view: SidebarView) => {
+    onNavigate(view);
+    if (isMobile) {
+      setOpenMobile(false);
+    } else {
+      setOpen(false);
+    }
+  };
+
   return (
     <Sidebar side="right" collapsible="offcanvas">
       <SidebarContent className="pt-4">
@@ -41,11 +53,11 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.view}>
                   <SidebarMenuButton
-                    onClick={() => onNavigate(item.view)}
-                    className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-secondary transition-colors cursor-pointer"
+                    onClick={() => handleNavigate(item.view)}
+                    className="flex items-center gap-3 py-4 px-3 h-12 rounded-lg hover:bg-secondary transition-colors cursor-pointer"
                   >
                     <item.icon className="w-5 h-5 text-primary shrink-0" />
-                    <span className="font-quran text-sm">{item.title}</span>
+                    <span className="font-quran text-sm leading-relaxed">{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
