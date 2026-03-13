@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Pause, SkipBack, SkipForward, Volume2, Loader2 } from "lucide-react";
-import { fetchSurahAudio, type AyahAudio } from "@/lib/quranApi";
+import { Play, Pause, SkipBack, SkipForward, Volume2, Loader2, Mic } from "lucide-react";
+import { fetchSurahAudio, RECITERS, type AyahAudio } from "@/lib/quranApi";
 import { toEasternArabic } from "@/lib/arabicNumerals";
 
 interface AudioPlayerProps {
@@ -11,6 +11,16 @@ interface AudioPlayerProps {
   onAyahChange?: (ayahNumber: number) => void;
 }
 
+const RECITER_STORAGE_KEY = "quran-reciter";
+
+function getSavedReciter(): string {
+  try {
+    return localStorage.getItem(RECITER_STORAGE_KEY) || "ar.alafasy";
+  } catch {
+    return "ar.alafasy";
+  }
+}
+
 const AudioPlayer = ({ surahNumber, surahName, totalAyahs, startFromAyah, onAyahChange }: AudioPlayerProps) => {
   const [audioData, setAudioData] = useState<AyahAudio[]>([]);
   const [currentAyah, setCurrentAyah] = useState(1);
@@ -18,13 +28,35 @@ const AudioPlayer = ({ surahNumber, surahName, totalAyahs, startFromAyah, onAyah
   const [loading, setLoading] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [reciterId, setReciterId] = useState(getSavedReciter);
+  const [showReciterMenu, setShowReciterMenu] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const animFrameRef = useRef<number>(0);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowReciterMenu(false);
+      }
+    };
+    if (showReciterMenu) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showReciterMenu]);
 
   // Fetch audio data
   useEffect(() => {
     setLoading(true);
-    fetchSurahAudio(surahNumber)
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    setIsPlaying(false);
+    setProgress(0);
+    cancelAnimationFrame(animFrameRef.current);
+
+    fetchSurahAudio(surahNumber, reciterId)
       .then((data) => setAudioData(data.ayahs))
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -36,7 +68,7 @@ const AudioPlayer = ({ surahNumber, surahName, totalAyahs, startFromAyah, onAyah
       }
       cancelAnimationFrame(animFrameRef.current);
     };
-  }, [surahNumber]);
+  }, [surahNumber, reciterId]);
 
   const updateProgress = useCallback(() => {
     if (audioRef.current && audioRef.current.duration) {
@@ -73,7 +105,6 @@ const AudioPlayer = ({ surahNumber, surahName, totalAyahs, startFromAyah, onAyah
         setIsPlaying(false);
         setProgress(0);
         cancelAnimationFrame(animFrameRef.current);
-        // Auto-play next ayah
         if (ayahNum < totalAyahs) {
           playAyah(ayahNum + 1);
         }
@@ -95,6 +126,14 @@ const AudioPlayer = ({ surahNumber, surahName, totalAyahs, startFromAyah, onAyah
       playAyah(startFromAyah);
     }
   }, [startFromAyah]);
+
+  const handleReciterChange = (id: string) => {
+    setReciterId(id);
+    setShowReciterMenu(false);
+    try {
+      localStorage.setItem(RECITER_STORAGE_KEY, id);
+    } catch {}
+  };
 
   const togglePlay = () => {
     if (!audioRef.current || !audioData.length) {
@@ -122,6 +161,8 @@ const AudioPlayer = ({ surahNumber, surahName, totalAyahs, startFromAyah, onAyah
 
   if (loading) return null;
 
+  const currentReciter = RECITERS.find(r => r.id === reciterId);
+
   return (
     <div className="sticky bottom-0 z-20 bg-card/95 backdrop-blur-md border-t border-border px-4 py-3 shadow-lg">
       {/* Progress bar */}
@@ -132,12 +173,48 @@ const AudioPlayer = ({ surahNumber, surahName, totalAyahs, startFromAyah, onAyah
         />
       </div>
 
-      <div className="flex items-center justify-between max-w-lg mx-auto gap-3">
-        {/* Ayah info */}
+      {/* Reciter selector popup */}
+      {showReciterMenu && (
+        <div
+          ref={menuRef}
+          className="absolute bottom-full right-3 mb-2 w-56 bg-popover border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200"
+        >
+          <div className="p-2 border-b border-border">
+            <p className="text-xs text-muted-foreground text-center font-quran">اختر القارئ</p>
+          </div>
+          <div className="max-h-64 overflow-y-auto">
+            {RECITERS.map((reciter) => (
+              <button
+                key={reciter.id}
+                onClick={() => handleReciterChange(reciter.id)}
+                className={`w-full text-right px-4 py-2.5 text-sm font-quran transition-colors ${
+                  reciter.id === reciterId
+                    ? "bg-primary/10 text-primary font-bold"
+                    : "text-foreground hover:bg-secondary"
+                }`}
+              >
+                {reciter.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between max-w-lg mx-auto gap-2">
+        {/* Reciter button + Ayah info */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <Volume2 className="w-4 h-4 text-primary shrink-0" />
-          <span className="text-xs text-muted-foreground truncate font-quran">
-            الآية {toEasternArabic(currentAyah)} من {toEasternArabic(totalAyahs)}
+          <button
+            onClick={() => setShowReciterMenu(!showReciterMenu)}
+            className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-secondary transition-colors shrink-0"
+            aria-label="اختيار القارئ"
+          >
+            <Mic className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[10px] text-muted-foreground truncate max-w-[70px] font-quran">
+              {currentReciter?.name}
+            </span>
+          </button>
+          <span className="text-[10px] text-muted-foreground truncate font-quran">
+            آية {toEasternArabic(currentAyah)}/{toEasternArabic(totalAyahs)}
           </span>
         </div>
 
@@ -177,7 +254,7 @@ const AudioPlayer = ({ surahNumber, surahName, totalAyahs, startFromAyah, onAyah
           </button>
         </div>
 
-        {/* Spacer for balance */}
+        {/* Spacer */}
         <div className="flex-1" />
       </div>
     </div>
