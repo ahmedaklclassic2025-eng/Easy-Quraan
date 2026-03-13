@@ -78,8 +78,24 @@ export interface SurahWithAudio {
   ayahs: AyahAudio[];
 }
 
-export async function fetchSurahAudio(surahNumber: number): Promise<SurahWithAudio> {
-  const res = await fetch(`${BASE_URL}/surah/${surahNumber}/ar.alafasy`);
+export interface Reciter {
+  id: string;
+  name: string;
+}
+
+export const RECITERS: Reciter[] = [
+  { id: "ar.alafasy", name: "مشاري العفاسي" },
+  { id: "ar.abdulbasitmurattal", name: "عبد الباسط عبد الصمد" },
+  { id: "ar.husary", name: "محمود خليل الحصري" },
+  { id: "ar.minshawi", name: "محمد صديق المنشاوي" },
+  { id: "ar.abdurrahmaansudais", name: "عبد الرحمن السديس" },
+  { id: "ar.saaborimahir", name: "ماهر المعيقلي" },
+  { id: "ar.ahmedajamy", name: "أحمد العجمي" },
+  { id: "ar.haborimahir", name: "هاني الرفاعي" },
+];
+
+export async function fetchSurahAudio(surahNumber: number, reciterId: string = "ar.alafasy"): Promise<SurahWithAudio> {
+  const res = await fetch(`${BASE_URL}/surah/${surahNumber}/${reciterId}`);
   if (!res.ok) throw new Error("Failed to fetch audio");
   const json: QuranApiResponse<SurahWithAudio> = await res.json();
   return json.data;
