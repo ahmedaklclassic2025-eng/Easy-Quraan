@@ -103,11 +103,11 @@ const SurahList = ({ onSelect, surahs: propSurahs, onOpenSearch }: SurahListProp
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <span className="text-sm font-bold text-primary">{toEasternArabic(surah.number)}</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-quran text-lg font-bold text-foreground">
+                <div className="flex-1 min-w-0 space-y-1">
+                  <h3 className="font-quran text-lg font-bold text-foreground leading-relaxed">
                     {surah.name}
                   </h3>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground leading-normal">
                     {revelationTypeArabic(surah.revelationType)} • {toEasternArabic(surah.numberOfAyahs)} آيات
                   </p>
                 </div>
